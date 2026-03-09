@@ -1,43 +1,27 @@
-### Как запустить проект:
+# Kittygram API
 
-Клонировать репозиторий и перейти в него в командной строке:
+## Установка и запуск (локально)
 
-```
-git clone https://github.com/yandex-praktikum/kittygram.git
-```
+1. Клонировать репозиторий:
+   git clone https://github.com/dzyubaka/kittygram
 
-```
-cd kittygram
-```
+2. Создать виртуальное окружение:
+   python -m venv venv
+   venv\Scripts\activate  (Windows)
+   source venv/bin/activate (Linux/Mac)
 
-Cоздать и активировать виртуальное окружение:
+3. Установить зависимости:
+   pip install -r requirements.txt
 
-```
-python3 -m venv env
-```
+4. Применить миграции:
+   python manage.py migrate
 
-```
-source env/bin/activate
-```
+5. Запустить сервер:
+   python manage.py runserver
 
-Установить зависимости из файла requirements.txt:
+6. Открыть документацию:
+   http://127.0.0.1:8000/api/docs/
 
-```
-python3 -m pip install --upgrade pip
-```
+## Переменные окружения
 
-```
-pip install -r requirements.txt
-```
-
-Выполнить миграции:
-
-```
-python3 manage.py migrate
-```
-
-Запустить проект:
-
-```
-python3 manage.py runserver
-```
+Скопируйте `.env.example` в `.env` и заполните значения.

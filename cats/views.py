@@ -1,19 +1,22 @@
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework import viewsets, permissions
+from .models import Cat, Category
+from .serializers import CatSerializer, CategorySerializer
 
-from .models import Cat
-from .serializers import CatSerializer
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.owner == request.user
 
+class CatViewSet(viewsets.ModelViewSet):
+    queryset = Cat.objects.all()
+    serializer_class = CatSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
-@api_view(['GET', 'POST'])
-def cat_list(request):
-    if request.method == 'POST':
-        serializer = CatSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    cats = Cat.objects.all()
-    serializer = CatSerializer(cats, many=True)
-    return Response(serializer.data)
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.AllowAny]
