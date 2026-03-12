@@ -23,3 +23,30 @@ class Cat(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Collection(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='collections')
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    is_private = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name
+
+
+class CollectionItem(models.Model):
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='items')
+    cat = models.ForeignKey(Cat, on_delete=models.CASCADE, related_name='collection_items')
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['collection', 'cat']
+        ordering = ['-added_at']
+
+    def __str__(self):
+        return f"{self.cat.name} in {self.collection.name}"
