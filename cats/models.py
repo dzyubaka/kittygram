@@ -34,6 +34,9 @@ class Collection(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(fields=['owner', 'name'], name='unique_owner_collection')
+        ]
 
     def __str__(self):
         return self.name

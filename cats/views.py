@@ -5,7 +5,8 @@ from django.shortcuts import get_object_or_404
 from django.db import models
 from .models import Cat, Category, Collection, CollectionItem
 from .serializers import CatSerializer, CategorySerializer, CollectionSerializer, CollectionItemSerializer
-
+from django_filters import rest_framework as filters
+from rest_framework import filters as drf_filters
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -51,10 +52,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 class CollectionViewSet(viewsets.ModelViewSet):
-    # Добавлен queryset для исправления ошибки роутера
     queryset = Collection.objects.all()
     serializer_class = CollectionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    filter_backends = [filters.DjangoFilterBackend, drf_filters.SearchFilter, drf_filters.OrderingFilter]
+    filterset_fields = ['is_private', 'created_at']
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'created_at']
+    ordering = ['-created_at']
 
     def get_queryset(self):
         user = self.request.user
